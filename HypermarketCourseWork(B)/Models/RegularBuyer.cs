@@ -1,65 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HypermarketCourseWork_B_.Models
+namespace HypermarketCourseWork_A_;
+
+public class RegularBuyer : Buyer
 {
-    public class RegularBuyer : Buyer
+    private string fullName;
+    private decimal totalBoughtSum;
+
+    // ПІБ постійного покупця
+    public string FullName
     {
-        public string FullName { get; set; }
-
-        public decimal TotalPurchasedAmount { get; set; }
-
-        public RegularBuyer(
-            string fullName,
-            decimal money,
-            decimal totalPurchasedAmount)
-            : base(money)
+        get => fullName;
+        set
         {
-            FullName = fullName;
-            TotalPurchasedAmount = totalPurchasedAmount;
-        }
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("ПІБ не може бути порожнім.");
 
-        public override double GetIndividualDiscount()
+            fullName = value;
+        }
+    }
+
+    // Загальна сума куплених товарів
+    public decimal TotalBoughtSum
+    {
+        get => totalBoughtSum;
+        set
         {
-            double discount = (double)(TotalPurchasedAmount / 1000);
+            if (value < 0)
+                throw new ArgumentException("Сума покупок не може бути від'ємною.");
 
-            if (discount > 15)
-            {
-                discount = 15;
-            }
-
-            return discount;
+            totalBoughtSum = value;
         }
+    }
 
-        public override bool BuyProduct(Product product)
-        {
-            double discount = GetIndividualDiscount();
+    public RegularBuyer(string fullName, decimal money, decimal totalBoughtSum)
+        : base(money)
+    {
+        FullName = fullName;
+        TotalBoughtSum = totalBoughtSum;
+    }
 
-            if (discount > product.MaxDiscountPercent)
-            {
-                discount = product.MaxDiscountPercent;
-            }
+    // Знижка постійного покупця
+    public override double IndividualDiscount()
+    {
+        double discount = (double)(TotalBoughtSum / 1000);
 
-            decimal finalPrice = product.Price - product.Price * (decimal)discount / 100;
+        if (discount > 15)
+            discount = 15;
 
-            if (Money >= finalPrice)
-            {
-                Money -= finalPrice;
+        return discount;
+    }
 
-                TotalPurchasedAmount += finalPrice;
+    // Після покупки збільшується загальна сума покупок
+    public override decimal BuyProduct(Product product)
+    {
+        decimal finalPrice = base.BuyProduct(product);
 
-                return true;
-            }
+        TotalBoughtSum += finalPrice;
 
-            return false;
-        }
+        return finalPrice;
+    }
 
-        public override string ToString()
-        {
-            return $"{FullName} | Money: {Money} UAH | Purchased: {TotalPurchasedAmount} UAH | Discount: {GetIndividualDiscount()}%";
-        }
+    public override string ToString()
+    {
+        return $"Постійний покупець: {FullName} | гроші: {Money} грн | куплено: {TotalBoughtSum} грн | знижка: {IndividualDiscount()}%";
     }
 }

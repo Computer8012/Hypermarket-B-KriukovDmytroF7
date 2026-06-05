@@ -1,38 +1,85 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HypermarketCourseWork_B_.Models
+namespace HypermarketCourseWork_A_;
+
+public class Laptop : Product
 {
-    public class Laptop : Product
+    private double diagonal;
+    private double weight;
+    private int processorCores;
+    private int memory;
+
+    // Діагональ екрана
+    public double Diagonal
     {
-        public double ScreenSize { get; set; }
-        public double Weight { get; set; }
-        public int ProcessorCoreCount { get; set; }
-        public int Memory { get; set; }
-
-        public Laptop(
-            string brand,
-            string name,
-            decimal price,
-            double maxDiscountPercent,
-            double screenSize,
-            double weight,
-            int processorCoreCount,
-            int memory)
-            : base(brand, name, price, maxDiscountPercent)
+        get => diagonal;
+        set
         {
-            ScreenSize = screenSize;
-            Weight = weight;
-            ProcessorCoreCount = processorCoreCount;
-            Memory = memory;
-        }
+            if (value <= 0)
+                throw new ArgumentException("Діагональ повинна бути більшою за 0.");
 
-        public override string ToString()
-        {
-            return $"Laptop | {base.ToString()} | Screen: {ScreenSize}\" | Weight: {Weight} kg | Cores: {ProcessorCoreCount} | Memory: {Memory} GB";
+            diagonal = value;
         }
+    }
+
+    // Вага ноутбука
+    public double Weight
+    {
+        get => weight;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("Вага повинна бути більшою за 0.");
+
+            weight = value;
+        }
+    }
+
+    // Кількість ядер процесора
+    public int ProcessorCores
+    {
+        get => processorCores;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("Кількість ядер повинна бути більшою за 0.");
+
+            processorCores = value;
+        }
+    }
+
+    // Обсяг пам'яті
+    public int Memory
+    {
+        get => memory;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("Пам'ять повинна бути більшою за 0.");
+
+            memory = value;
+        }
+    }
+
+    public Laptop(
+        string firm,
+        string name,
+        decimal price,
+        double maxDiscountPercent,
+        double diagonal,
+        double weight,
+        int processorCores,
+        int memory)
+        : base(firm, name, price, maxDiscountPercent)
+    {
+        Diagonal = diagonal;
+        Weight = weight;
+        ProcessorCores = processorCores;
+        Memory = memory;
+    }
+
+    public override string ToString()
+    {
+        return $"Ноутбук: {base.ToString()} | {Diagonal}\" | {Weight} кг | ядер: {ProcessorCores} | пам'ять: {Memory} ГБ";
     }
 }

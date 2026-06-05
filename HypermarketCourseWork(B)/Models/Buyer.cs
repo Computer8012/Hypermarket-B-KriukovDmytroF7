@@ -1,48 +1,63 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HypermarketCourseWork_B_.Models
+namespace HypermarketCourseWork_A_;
+
+public class Buyer
 {
-    public class Buyer
+    private decimal money;
+
+    // Номер звичайного покупця
+    public int Number { get; set; }
+
+    // Кількість грошей покупця
+    public decimal Money
     {
-        public decimal Money { get; set; }
-
-        public Buyer(decimal money)
+        get => money;
+        set
         {
-            Money = money;
+            if (value < 0)
+                throw new ArgumentException("Гроші не можуть бути від'ємними.");
+
+            money = value;
         }
+    }
 
-        public virtual double GetIndividualDiscount()
-        {
-            return 0;
-        }
+    public Buyer(decimal money)
+    {
+        Money = money;
+    }
 
-        public virtual bool BuyProduct(Product product)
-        {
-            double discount = GetIndividualDiscount();
+    // Індивідуальна знижка покупця
+    public virtual double IndividualDiscount()
+    {
+        return 0;
+    }
 
-            if (discount > product.MaxDiscountPercent)
-            {
-                discount = product.MaxDiscountPercent;
-            }
+    // Купівля товару
+    public virtual decimal BuyProduct(Product product)
+    {
+        if (product == null)
+            throw new ArgumentException("Товар не вибрано.");
 
-            decimal finalPrice = product.Price - product.Price * (decimal)discount / 100;
+        double discount = IndividualDiscount();
 
-            if (Money >= finalPrice)
-            {
-                Money -= finalPrice;
-                return true;
-            }
+        // Знижка не може бути більшою за максимальну знижку товару
+        if (discount > product.MaxDiscountPercent)
+            discount = product.MaxDiscountPercent;
 
-            return false;
-        }
+        decimal finalPrice = product.Price - product.Price * (decimal)discount / 100;
 
-        public override string ToString()
-        {
-            return $"Regular buyer | Money: {Money} UAH | Discount: {GetIndividualDiscount()}%";
-        }
+        // Перевірка наявності грошей
+        if (Money < finalPrice)
+            throw new InvalidOperationException("Недостатньо грошей для покупки.");
+
+        Money -= finalPrice;
+
+        return finalPrice;
+    }
+
+    public override string ToString()
+    {
+        return $"Покупець №{Number} | гроші: {Money} грн";
     }
 }
